@@ -1,0 +1,159 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Namen eintragen</title>
+    <style>
+      html, body {
+        width: 100%;
+        overflow-x: hidden;
+        margin: 0;
+      }
+
+      body {
+        font-size: 200%;
+      }
+
+      #wrapper {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: center;
+      }
+
+      #nav {
+        width: 100%;
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        flex-wrap: wrap;
+        background-color: LightBlue;
+        margin-bottom: 1em;
+      }
+
+      #nav a {
+        display: block;
+        background-color: blue;
+        color: white;
+        border: 1px solid black;
+        border-radius: 10px;
+        padding: 0.2em;
+        margin: 0.2em;
+        text-decoration: none;
+      }
+
+      #error {
+        width: 90%;
+        border: none;
+        border-radius: 20px;
+        background-color: Tomato;
+        text-align: center;
+        font-size: 200%;
+        word-wrap: break-word;
+        padding: 0.2em;
+        margin-bottom: 0.5em;
+      }
+
+      #message {
+        width: 90%;
+        border: none;
+        border-radius: 20px;
+        background-color: LightBlue;
+        text-align: center;
+        font-size: 200%;
+        word-wrap: break-word;
+        padding: 0.2em;
+        margin-bottom: 0.5em;
+      }
+
+      #form {
+        width: 90%;
+      }
+
+      .label, .input {
+        float: left;
+        margin-top: 6px;
+        box-sizing: border-box;
+        word-wrap: break-word;
+      }
+      .label {
+        width: 50%;
+      }
+      .input {
+        width: 50%;
+      }
+      .row {
+        margin-bottom: 0.2em;
+      }
+      .row:after {
+        content: "";
+        display: table;
+        clear: both;
+      }
+
+      input {
+        font-size: 100%;
+      }
+
+      @media screen and (max-width: 1000px) {
+        .label, .input, input[type=submit] {
+          width: 100%;
+          margin-top: 0;
+        }
+        #nav a {
+          font-size: 200%;
+          width: 100%;
+          text-align: center;
+        }
+        #form {
+          font-size: 200%;
+        }
+      }
+
+      input[type=text] {
+        width: 100%;
+        padding 12px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+      }
+
+      label {
+        padding: 12px 12px 12px 0;
+        display: inline-block;
+        max-width: 100%;
+      }
+
+      input[type=submit] {
+        background-color: #4CAF50;
+        color: white;
+        padding: 12px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        float: right;
+        margin-top: 0.5em;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="wrapper">
+      <div id="nav">
+        <a href="queue">Warteschlange</a><a href="playing">Now Playing</a><a href="songs">Songs</a>
+      </div>
+      {{if .Error}}<div id="error">{{.Error}}</div>{{end}}
+      {{if .Msg}}<div id="message">{{.Msg}}</div>{{end}}
+      <div id="form">
+        <form action="save">
+          <div class="row"><div class="label"><label for="id">Ticketnummer</label></div><div class="input"><input type="text" name="id" placeholder="42" value="{{.ID}}"></div></div>
+          <div class="row"><div class="label"><label for="pin">PIN</label></div><div class="input"><input type="text" name="pin" placeholder="1234" value="{{.PIN}}"></div></div>
+          <div class="row"><div class="label"><label for="name1">Mikro #1 (Grün, links)</label></div><div class="input"><input type="text" name="name1" placeholder="Name" value="{{.Name1}}"></div></div>
+          <div class="row"><div class="label"><label for="name2">Mikro #2 (Blau, mitte links)</label></div><div class="input"><input type="text" name="name2" placeholder="Name" value="{{.Name2}}"></div></div>
+          <div class="row"><div class="label"><label for="name3">Mikro #3 (Rot, mitte rechts)</label></div><div class="input"><input type="text" name="name3" placeholder="Name" value="{{.Name3}}"></div></div>
+          <div class="row"><div class="label"><label for="name4">Mikro #4 (Gelb, rechts)</label></div><div class="input"><input type="text" name="name4" placeholder="Name" value="{{.Name4}}"></div></div>
+          <div class="row"><input type="submit"></div>
+          </form>
+        </div>
+    </div>
+  </body>
+</html>

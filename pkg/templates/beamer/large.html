@@ -1,0 +1,172 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Beamer</title>
+    <link rel="stylesheet" type="text/css" href="beamer.css">
+    <style>
+      body {
+        flex-direction: row;
+        font-size: 400%;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+      }
+
+      body > div {
+        height: 100%;
+      }
+
+      h1 {
+        margin: 0;
+      }
+
+      #playing {
+        width: 50%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+      }
+
+      #playing * {
+        overflow-x: hidden;
+        text-overflow: ellipsis;
+        max-width: 100%;
+      }
+
+      #current {
+        width: 50%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+      }
+
+      #names {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: flex-start;
+      }
+
+      #names > div {
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-start;
+        align-items: center;
+        width: 100%;
+      }
+
+      #names .progress {
+        width: 30%;
+        height: 0.6em;
+        border-radius: 0.2em;
+        margin-right: 0.2em;
+      }
+
+      #cover {
+        max-width: 50%;
+        height: auto;
+        width: auto;
+      }
+
+      #id {
+        font-size: 400%;
+      }
+
+      #progress {
+        width: 80%;
+        height: 1em;
+        background-color: white;
+      }
+
+      @media (max-aspect-ratio: 4/3) {
+        body {
+          flex-direction: column;
+        }
+        body > div {
+          height: 50%;
+        }
+        #playing img {
+          max-height: 20%;
+        }
+        #playing {
+          width: 100%;
+        }
+        #current {
+          width: 100%;
+        }
+        #names {
+          width: 100%;
+          flex-wrap: wrap;
+        }
+        #names > div {
+          width: 50%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="playing" style="display: none;">
+      <img id="cover" src="">
+      <div id="title">Karate</div>
+      <div id="artist">BABYMETAL</div>
+      <div id="progress" class="progress">
+        <div id="bar" style="width:50%"></div>
+      </div>
+    </div>
+    <div id="current">
+      <h1 id="id" class="id"></h1>
+      <div id="names">
+        <div style="visibility:hidden;"><div class="progress"><div style="width:73%"></div></div><div>Bla</div></div>
+        <div style="visibility:hidden;"><div class="progress"><div style="width:28%"></div></div><div>Foo</div></div>
+        <div style="visibility:hidden;"><div class="progress"><div style="width:17%"></div></div><div>Bar</div></div>
+        <div style="visibility:hidden;"><div class="progress"><div style="width:17%"></div></div><div>Bar</div></div>
+      </div>
+    </div>
+    <script type="application/javascript" src="beamer.js"></script>
+    <script>
+      "use strict";
+      function render(state) {
+        document.getElementById("id").innerHTML = state.ticket.id;
+        var playing = document.getElementById("playing")
+        if (state.hasSong) {
+          var perc = state.song.elapsed / state.song.total;
+          if (perc < 0) {
+            perc = 0;
+          } else if (perc > 1) {
+            perc = 1;
+          }
+          document.getElementById("cover").src = state.song.cover;
+          document.getElementById("title").innerText = state.song.title;
+          document.getElementById("artist").innerText = state.song.artist;
+          document.getElementById("bar").style.width = (perc * 100) + "%";
+          playing.style.display = "flex";
+        } else {
+          playing.style.display = "none";
+        }
+        var names = document.getElementById("names").children
+        var max = 0;
+        for (var i = 0; i < state.ticket.scores.length; i++) {
+          var s = state.ticket.scores[i];
+          if (s > max) {
+            max = s;
+          }
+        }
+        for (var i = 0; i < names.length; i++) {
+          if (i >= state.ticket.names.length) {
+            names[i].style.visibility = 'hidden';
+            continue;
+          }
+
+          names[i].style.visibility = "visible";
+          names[i].children[0].children[0].style.width = (state.ticket.scores[i] / max * 100) + "%";
+          names[i].children[0].children[0].style.backgroundColor = "#" + state.ticket.colors[i];
+          names[i].children[1].innerHTML = state.ticket.names[i];
+        }
+      }
+      update('state', render);
+    </script>
+  </body>
+</html>

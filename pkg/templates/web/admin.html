@@ -1,0 +1,106 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Warteschlange</title>
+    <link rel="stylesheet" type="text/css" href="web.css">
+    <style>
+      #queue {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        width: 90%;
+      }
+
+      .ticket {
+        width: 100%;
+        border: 1px solid black;
+        margin-bottom: 0.5em;
+      }
+
+      .id {
+        text-align: center;
+        font-size: 150%;
+        font-weight: bold;
+        margin-top: 0.1em;
+        margin-bottom: 0.1em;
+      }
+
+      .names {
+        margin-top: 0.1em;
+        margin-bottom: 0.1em;
+      }
+
+      .active {
+        background-color: LightBlue;
+      }
+
+      #admin, #state {
+        font-size: 200%;
+      }
+
+      #state {
+        text-align: center;
+      }
+
+      #admin {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        background-color: white;
+        margin-bottom: 1em;
+      }
+
+      #admin a {
+        display: block;
+        background-color: lightgray;
+        color: black;
+        border: 1px solid black;
+        border-radius: 5px;
+        padding: 0.2em;
+        margin: 0.2em;
+        text-decoration: none;
+        text-align: center;
+      }
+
+      #movement {
+        width: 100%;
+        display: flex;
+        flex-direction: space-between;
+        justify-content: flex-start;
+      }
+
+      #movement a {
+        width: 50%;
+      }
+
+      {{if .Paused}}
+      #admin a#pause {
+        background-color: Tomato;
+      }
+      {{end}}
+    </style>
+  </head>
+  <body>
+    <div id="wrapper">
+      <div id="nav">
+        <a href="queue">Warteschlange</a><a href="playing">Now Playing</a><a href="edit">Namen eintragen</a><a href="songs">Songs</a>
+      </div>
+      {{if .Error}}<div id="error">{{.Error}}</div>{{end}}
+      {{if .Msg}}<div id="message">{{.Msg}}</div>{{end}}
+      <div id="state">
+        <p>#{{.Current}}{{if .Upcoming}}, danach {{.Upcoming}}.{{end}}</p>
+      </div>
+      <div id="admin">
+        <a id="pause" href="admin?action=pause">{{if .Paused}}Unpause{{else}}Pause{{end}}</a>
+        <div id="movement"><a href="admin?action=goback">Go back</a><a href="admin?action=advance">Advance</a></div>
+      </div>
+      <div id="tickets">
+        {{range .Tickets}}
+        <a href="admin?edit={{.ID}}"><div class="ticket"><p class="id">#{{.ID}}</p>{{if .Names}}<ol class="names">{{range .Names}}<li>{{.}}</li>{{end}}</ol>{{end}}</div></a>
+        {{end}}
+      </div>
+    </div>
+  </body>
+</html>

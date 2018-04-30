@@ -1,0 +1,66 @@
+html, body {
+  width: 100%;
+  overflow-x: hidden;
+  margin: 0;
+}
+
+body {
+  font-size: 200%;
+  background-color: #bdb9b7;
+}
+
+#wrapper {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+#nav {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  flex-wrap: wrap;
+  background-color: LightBlue;
+  margin-bottom: 1em;
+}
+
+#nav a {
+  display: block;
+  background-color: blue;
+  color: white;
+  border: 1px solid black;
+  border-radius: 10px;
+  padding: 0.2em;
+  margin: 0.2em;
+  text-decoration: none;
+}
+
+@media screen and (max-width: 1000px) {
+  #nav a {
+    font-size: 200%;
+    width: 100%;
+    text-align: center;
+  }
+}
+
+#error, #message {
+  width: 90%;
+  border: none;
+  border-radius: 20px;
+  text-align: center;
+  font-size: 200%;
+  word-wrap: break-word;
+  padding: 0.2em;
+  margin-bottom: 0.5em;
+}
+
+#error {
+  background-color: #ffa040;
+}
+
+#message {
+  background-color: #ffffff;
+}

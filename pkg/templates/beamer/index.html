@@ -1,0 +1,192 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Beamer</title>
+    <style>
+      html, body {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+      }
+
+      body {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        font-size: 400%;
+        background-image: url("bg.png");
+        background-repeat: no-repeat;
+        background-position: center center;
+        background-size: contain;
+      }
+
+      body > div {
+        height: 90%;
+        padding-left: 2em;
+        padding-right: 2em;
+      }
+
+      p#curid {
+        font-size: 300%;
+        margin-bottom: 0;
+      }
+
+      p#upcoming {
+        margin-top: 0;
+        font-size: 100%;
+        width: 100%;
+      }
+
+      p {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 100%;
+      }
+
+      img {
+        margin-bottom: 1em;
+        max-width: 90%;
+        max-height: 40%;
+        width: auto;
+        height: auto;
+      }
+
+      {{if .HasSong}}
+      #playback {
+        width: 25%;
+      }
+      #queue {
+        width: 75%;
+      }
+      {{else}}
+      #queue {
+        width: 90%;
+      }
+      {{end}}
+
+      #playback, #queue {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+      }
+
+      p {
+        margin-top: 0.1em;
+        margin-bottom: 0.1em;
+      }
+
+      #playback p {
+        white-space: nowrap;
+      }
+
+      #progress {
+        width: 50%;
+        height: 1em;
+        border: 2px solid black;
+        background-color: white;
+      }
+
+      #progress, #progress div {
+        border-radius: 10px;
+      }
+
+      #progress div {
+        background-color: LightBlue;
+        width: {{.Song.CompletionPerc}}%;
+        height: 100%;
+      }
+
+      #scores {
+        margin-top: 1.5em;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: flex-start;
+      }
+
+      #names {
+        width: 100%;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: center;
+        text-align: center;
+      }
+
+      #names .name {
+        width: 100%;
+      }
+
+      .name {
+        width: 70%;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .score {
+        width: 100%;
+        display: flex;
+        flex-direction: row-reverse;
+        justify-content: space-between;
+        align-items: center;
+        text-align: left;
+      }
+
+      .scorebar {
+        width: 28%;
+        height: 0.7em;
+        border: 2px solid black;
+        background-color: white;
+      }
+
+      .scorebar, .scorebar div {
+        border-radius: 10px;
+      }
+
+      .scorebar div {
+        height: 100%;
+      }
+
+      #position {
+        margin-bottom: 0.4em;
+      }
+    </style>
+  </head>
+  <body>
+    {{if .HasSong}}
+    <div id="playback">
+      <img src="{{.Song.CoverURL}}">
+      <div id="progress"><div></div></div>
+      <p id="position">{{.Position | formatDuration}} / {{.Song.Length | formatDuration}}</p>
+      <p>{{.Song.Artist}}</p>
+      <p>{{.Song.Title}}</p>
+    </div>
+    {{end}}
+    <div id="queue">
+    {{if .Empty}}
+      <p>Die Warteschlange ist leer. Hol dir jetzt ein Ticket!</p>
+    {{else}}
+      <p id="curid">#{{.CurrentID}}</p>
+      {{if ne .Waiting 0}}<p id="upcoming">+ {{.Waiting}} Gruppen</p>{{end}}
+    {{end}}
+    {{if .HasSong}}
+      {{with .Scores}}<div id="scores">
+        {{range .}}
+        <div class="score"><p class="name">{{.Name}}</p><div class="scorebar"><div style="width:{{.RelPercentage}}%;background-color:{{if .Color}}#{{.Color}}{{else}}LightBlue{{end}};"></div></div></div>
+        {{end}}
+      </div>{{end}}
+    {{else}}
+      <div id="names">
+        {{range .Scores}}
+          <p class="name">{{.Name}}</p>
+        {{end}}
+      </div>
+    {{end}}
+    </div>
+  </body>
+</html>

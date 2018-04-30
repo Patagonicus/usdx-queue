@@ -1,0 +1,48 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Registration</title>
+    <style>
+      html, body, form {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+      }
+      #full-size {
+        height: 100%;
+        width: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+        overflow: hidden;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      #wrapper {
+        width: 90%;
+        height: 90%;
+      }
+      button {
+        width: 100%;
+        height: 100%;
+        color: black;
+        font-size: 600%;
+        background: LightBlue;
+        border: 10px solid black;
+        border-radius: 50px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="full-size">
+      <div id="wrapper">
+        <form action="create" id="form">
+          <!--<input type="submit" value="Ticket drucken" />-->
+          <button type="submit" form="form">Gruppenticket<br />drucken</button>
+        </form>
+      </div>
+    </div>
+  </body>
+</html>

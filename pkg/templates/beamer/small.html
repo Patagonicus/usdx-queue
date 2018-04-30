@@ -1,0 +1,66 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Beamer</title>
+    <link rel="stylesheet" type="text/css" href="beamer.css">
+    <style>
+      body {
+        flex-direction: column;
+      }
+
+      h1 {
+        margin: 0;
+      }
+
+      #id {
+        font-size: 3000%;
+      }
+
+      #progress {
+        width: 100%;
+        height: 6em;
+        background-color: white;
+      }
+
+      #progresswrapper {
+        width: 80%;
+        padding-bottom: 12em;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="current">
+      <h1 id="id" class="id"></h1>
+    </div>
+    <div id="progresswrapper">
+      <div id="progress" class="progress" style="visibility: hidden">
+        <div id="bar"></div>
+      </div>
+    </div>
+    <script type="application/javascript" src="beamer.js"></script>
+    <script>
+      "use strict";
+      function render(state) {
+        document.getElementById("id").innerHTML = state.ticket.id;
+        var progress = document.getElementById("progress")
+        var bar = document.getElementById("bar")
+        if (state.hasSong) {
+          var perc = state.song.elapsed / state.song.total;
+          if (perc < 0) {
+            perc = 0;
+          } else if (perc > 1) {
+            perc = 1;
+          }
+          bar.style.width = (perc * 100) + "%";
+          console.log("showing")
+          progress.style.visibility = "visible";
+        } else {
+          console.log("hiding")
+          progress.style.visibility = "hidden";
+        }
+      }
+      update('state', render);
+    </script>
+  </body>
+</html>

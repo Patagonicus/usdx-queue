@@ -1,0 +1,418 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ultrastar</title>
+    <link rel="stylesheet" href="material/material-icons.css">
+    <style>
+      body, html {
+        width: 100%;
+        overflow-x: hidden;
+        padding: 0;
+        margin: 0;
+      }
+
+      #app {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: center;
+      }
+
+      #app > * {
+        width: 100%;
+      }
+
+      #nav {
+        height: 100%;
+        width: 100%;
+        position: fixed;
+        top: 0;
+        left: 0;
+        background-color: #CCC;
+        overflow-x: hidden;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: left;
+        transition: width 0.4s;
+      }
+
+      #nav > * {
+        margin-bottom: 0.5em;
+        font-size: 200%;
+      }
+
+      a.nav {
+        color: black;
+        text-decoration: none;
+        width: 100%;
+        box-sizing: border-box;
+        border: 1px solid black;
+        border-radius: 5px;
+        background-color: #EEE;
+      }
+
+      #header {
+        background-color: #CCC;
+      }
+
+      #closebtn, #openbtn {
+        font-size: 32px;
+      }
+
+      .id::before {
+        content: "#";
+      }
+
+      .queue {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: center;
+        width: 100%;
+        font-size: 150%;
+      }
+
+      .queue .id {
+        text-align: center;
+        font-weight: bold;
+      }
+
+      .queue div {
+        width: 90%;
+        border: 1px solid black;
+        border-radius: 5px;
+        background-color: #eee;
+        margin: 0.5em 0;
+      }
+
+      .songs {
+        width: 100%;
+        border-collapse: collapse;
+        border: none;
+      }
+
+      .songs td {
+        border: 0;
+        padding: 0;
+      }
+
+      .songs tr:nth-child(odd) {
+        background-color: #eee;
+      }
+
+      .songs td:nth-child(0) {
+        word-break: break-all;
+      }
+      .songs td:nth-child(1) {
+        word-break: break-all;
+      }
+
+      .songs-wrapper {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: center;
+      }
+
+      #search {
+        width: 80%;
+        margin: 0.5em 0;
+        border: 1px solid black;
+        border-radius: 5px;
+      }
+
+      .edit-wrapper {
+        font-size: 200%;
+      }
+
+      input {
+        font-size: 100%;
+      }
+
+      input[type=text] {
+        width: 100%;
+        padding 12px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+      }
+
+      label {
+        padding: 12px 12px 12px 0;
+        display: inline-block;
+        max-width: 100%;
+      }
+
+      input[type=submit] {
+        background-color: #4CAF50;
+        color: white;
+        padding: 12px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        float: right;
+        margin-top: 0.5em;
+      }
+
+      .loading, .error, .saved {
+        width: 100%;
+        text-align: center;
+        border: 2px solid black;
+        border-radius: 5px;
+        margin: 0.5em 0;
+        box-sizing: border-box;
+      }
+
+      .loading {
+        background-color: #CCC;
+      }
+
+      .error {
+        background-color: #ff7a68;
+      }
+
+      .saved {
+        background-color: #4CAF50;
+      }
+    </style>
+    <!--<script src="vue.js"></script>-->
+    <script src="https://vuejs.org/js/vue.js"></script>
+    <script src="vue-router.js"></script>
+  </head>
+  <body>
+    <div id="app">
+      <div id="nav" style="width:0"><a class="closebtn" href="javascript:void(0)" onclick="closeNav()"><i class="material-icons">close</i></a><router-link class="nav" to="/queue">Warteschlange</router-link><router-link class="nav" to="/songs">Songs</router-link><router-link class="nav" to="/edit">Namen eintragen</router-link></div>
+      <div id="header"><a id="openbtn" href="javascript:void(0)" onclick="openNav()"><i class="material-icons">menu</i></a></div>
+      <div id="content"><router-view></router-view></div>
+    </div>
+
+    <template id="tmpl-queue"><div>
+      <div class="loading" v-if="loading">
+        Lade …
+      </div>
+      <div class="error" v-if="error">
+        Fehler: {{ error }}
+      </div>
+      <div class="queue">
+        <div v-for="(ticket, index) in queue">
+          <p class="id">{{ticket.id}}</p>
+          <ol>
+            <li v-for="name in ticket.names">{{name}}</li>
+          </ol>
+        </div>
+      </div>
+    </div></template>
+
+    <template id="tmpl-songs"><div class="songs-wrapper">
+      <div class="loading" v-if="loading">
+        Lade …
+      </div>
+      <div class="error" v-if="error">
+        Fehler: {{ error }}
+      </div>
+      <input type="text" v-model="search" placeholder="Suche" id="search" v-if="!loading && !error">
+      <table class="songs" v-if="!loading && !error">
+        <tr><th>Künstler</th><th>Titel</th><th>Jahr</th></tr>
+        <tr v-for="song in filteredSongs"><td>{{song.artist}}</td><td>{{song.title}}</td><td>{{song.year}}</td></tr>
+      </table>
+    </div></template>
+
+    <template id="tmpl-edit"><div class="edit-wrapper">
+      <div class="loading" v-if="loading">
+        Lade …
+      </div>
+      <div class="error" v-if="error">
+        Fehler: {{ error }}
+      </div>
+      <div class="saved" v-if="saved">
+        Gespeichert.
+      </div>
+      <form v-on:submit.prevent="onSubmit">
+        <div class="row"><div class="label"><label for="id">Ticketnummer</label></div><div class="input"><input v-model="id" type="text" name="id" placeholder="42"></div></div>
+        <div class="row"><div class="label"><label for="pin">PIN</label></div><div class="input"><input v-model="pin" type="text" name="pin" placeholder="1234"></div></div>
+        <div class="row"><div class="label"><label for="name1">Mikro #1 (Grün, links)</label></div><div class="input"><input v-model="name1" type="text" name="name1" placeholder="Name"></div></div>
+        <div class="row"><div class="label"><label for="name2">Mikro #2 (Blau, mitte links)</label></div><div class="input"><input v-model="name2" type="text" name="name2" placeholder="Name"></div></div>
+        <div class="row"><div class="label"><label for="name3">Mikro #3 (Rot, mitte rechts)</label></div><div class="input"><input v-model="name3" type="text" name="name2" placeholder="Name"></div></div>
+        <div class="row"><div class="label"><label for="name4">Mikro #4 (Gelb, rechts)</label></div><div class="input"><input v-model="name4" type="text" name="name4" placeholder="Name"></div></div>
+        <div class="row"><input type="submit"></div>
+      </form>
+    </div></template>
+
+    <script>
+      "use strict";
+      function openNav() {
+        document.getElementById('nav').style.width = '100%';
+      }
+      function closeNav() {
+        document.getElementById('nav').style.width = '0';
+      }
+
+      function postJSON(url, data, cb, err) {
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', url, true);
+        xhr.responseType = 'json';
+        xhr.onload = function() {
+          if (xhr.status >= 200 && xhr.status <= 299) {
+            cb(xhr.response);
+          } else {
+            err(xhr.status, xhr.statusText);
+          }
+        };
+        xhr.send(JSON.stringify(data));
+      }
+
+      function getJSON(url, cb, err) {
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', url, true);
+        xhr.responseType = 'json';
+        xhr.onload = function() {
+          if (xhr.status >= 200 && xhr.status <= 299) {
+            cb(xhr.response);
+          } else {
+            err(xhr.status, xhr.statusText);
+          }
+        };
+        xhr.send();
+      }
+
+      const queue = Vue.component('queue', {
+        data() {
+          return {
+            loading: true,
+            error: "",
+            queue: [],
+          }
+        },
+        template: document.getElementById('tmpl-queue').innerHTML,
+        created() {
+          this.fetchData();
+        },
+        methods: {
+          fetchData() {
+            this.error = null;
+            this.queue = [];
+            this.loading = true;
+            getJSON('api/queue',
+              (data) => {
+                this.loading = false;
+                this.queue = data.upcoming;
+              },
+              (status, text) => {
+                this.loading = false;
+                this.error = "" + status + ": " + text;
+              },
+            );
+          },
+        },
+      })
+
+      const songs = Vue.component('songs', {
+        data() {
+          return {
+            loading: true,
+            error: "",
+            songs: [],
+            search: "",
+          }
+        },
+        template: document.getElementById('tmpl-songs').innerHTML,
+        created() {
+          this.fetchData();
+        },
+        methods: {
+          fetchData() {
+            this.error = null;
+            this.songs = [];
+            this.loading = true;
+            getJSON('api/songs',
+              (data) => {
+                this.loading = false;
+                this.songs = data;
+              },
+              (status, text) => {
+                this.loading = false;
+                this.error = "" + status + ": " + text;
+              },
+            );
+          },
+        },
+        computed: {
+          filteredSongs: function() {
+            var re = RegExp(this.search.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'), 'i');
+            return this.songs.filter(song => {
+              return re.test(song.artist) || re.test(song.title);
+            })
+          },
+        }
+      })
+
+      const edit = Vue.component('edit', {
+        props: ['id', 'pin'],
+        data() {
+          return {
+            loading: false,
+            error: "",
+            saved: false,
+            name1: "",
+            name2: "",
+            name3: "",
+            name4: "",
+          }
+        },
+        template: document.getElementById('tmpl-edit').innerHTML,
+        methods: {
+          onSubmit() {
+            this.loading = true;
+            this.saved = false;
+            this.error = "";
+            window.scrollTo(0, 0);
+            postJSON('api/save', {
+              id: this.id,
+              pin: this.pin,
+              names: [
+                this.name1,
+                this.name2,
+                this.name3,
+                this.name4,
+              ],
+            },
+            (data) => {
+              this.loading = false;
+              this.saved = true;
+            },
+            (status, text) => {
+              this.loading = false;
+              this.saved = false;
+              this.error = "" + status + ": " + text;
+            },
+            );
+          }
+        }
+      })
+
+      const router = new VueRouter({
+        routes: [
+          { path: '/', redirect: '/queue' },
+          { path: '/queue', component: queue },
+          { path: '/songs', component: songs },
+          { path: '/playing', component: { template: '<div>playing</div>' } },
+          { path: '/edit', component: edit },
+          { path: '/edit/:id/:pin', component: edit, props: true },
+        ]
+      });
+
+      router.beforeEach((to, from, next) => {
+        closeNav();
+        next();
+      })
+
+      const app = new Vue({
+        router
+      }).$mount('#app');
+    </script>
+  </body>
+</html>
